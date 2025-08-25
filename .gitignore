@@ -1,4 +1,5 @@
-# ignore images files
+# ignore images files and zip files for face-expression-recognitiond dataset
+*.zip
 *.jpg
 
 # Byte-compiled / optimized / DLL files
