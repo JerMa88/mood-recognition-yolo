@@ -1,11 +1,16 @@
-# Mood 
-Facial emotion detection using YOLO-V8
+# Facial Emotion Detection 
+
+
+# Finetuning YOLO-V8 
+Facial emotion detection using YOLO-V8.
+This data does not have sufficient amount of images for training a robust model. The model is overfitted to the training data and does not generalize well to unseen data, according to the train/test loss and accuracy curves.
+![Training and Validation Loss](./yolo_overfitted/loss.png)
 
 ## Installation
 1. Clone the repository:
    ```bash
    git clone
-   cd mood-recognition-yolo
+   cd mood-recognition/yolo_overfitted
    ```
 2. Create and activate a virtual environment (optional but recommended):
    ```bash
