@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Tuple
+from typing import Tuple, Optional
 
 import torch
 from torch.utils.data import DataLoader
+from torch.utils.data.distributed import DistributedSampler
 from torchvision import datasets, transforms
 
 
@@ -41,18 +42,30 @@ def build_transforms(img_size: int) -> Tuple[transforms.Compose, transforms.Comp
     return train_tf, val_tf
 
 
-def build_dataloaders(cfg: DataConfig) -> Tuple[DataLoader, DataLoader, int]:
+def build_dataloaders(
+    cfg: DataConfig,
+    distributed: bool = False,
+    rank: int = 0,
+    world_size: int = 1,
+) -> Tuple[DataLoader, DataLoader, int, Optional[DistributedSampler], Optional[DistributedSampler]]:
     train_tf, val_tf = build_transforms(cfg.img_size)
     train_ds = datasets.ImageFolder(root=f"{cfg.data_dir}/train", transform=train_tf)
     val_ds = datasets.ImageFolder(root=f"{cfg.data_dir}/val", transform=val_tf)
     num_classes = len(train_ds.classes)
 
+    train_sampler: Optional[DistributedSampler] = None
+    val_sampler: Optional[DistributedSampler] = None
+    if distributed:
+        train_sampler = DistributedSampler(train_ds, num_replicas=world_size, rank=rank, shuffle=True, drop_last=False)
+        val_sampler = DistributedSampler(val_ds, num_replicas=world_size, rank=rank, shuffle=False, drop_last=False)
+
     train_loader = DataLoader(
         train_ds,
         batch_size=cfg.batch_size,
-        shuffle=True,
+        shuffle=(train_sampler is None),
         num_workers=cfg.num_workers,
         pin_memory=True,
+        sampler=train_sampler,
     )
     val_loader = DataLoader(
         val_ds,
@@ -60,6 +73,6 @@ def build_dataloaders(cfg: DataConfig) -> Tuple[DataLoader, DataLoader, int]:
         shuffle=False,
         num_workers=cfg.num_workers,
         pin_memory=True,
+        sampler=val_sampler,
     )
-    return train_loader, val_loader, num_classes
-
+    return train_loader, val_loader, num_classes, train_sampler, val_sampler

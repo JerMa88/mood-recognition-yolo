@@ -38,6 +38,16 @@ Run training (ResNet-50, ArcFace):
 python scripts/train.py --data-dir data --out-dir runs/exp --epochs 20 --batch-size 64 --embedding-dim 512 --arch resnet50
 ```
 
+### Distributed (DDP)
+Use torchrun to launch multi-GPU training on a single node:
+
+```
+torchrun --standalone --nproc_per_node=2 scripts/train.py --data-dir data --out-dir runs/ddp_exp --epochs 20 --batch-size 64 --embedding-dim 512 --arch resnet50
+```
+Notes:
+- Each process binds to one GPU; set `CUDA_VISIBLE_DEVICES` to select GPUs.
+- AMP is enabled by default; disable with `--no-amp`.
+
 ## Evaluate Retrieval
 Compute mAP@k using cosine similarity, with gallery=`data/train` and queries=`data/val`:
 
