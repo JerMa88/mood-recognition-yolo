@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "landmark-embedding"
+version = "0.1.0"
+description = "Landmark embedding utilities and helpers"
+requires-python = ">=3.10"
+keywords = ["computer-vision", "embeddings", "landmarks"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "License :: Other/Proprietary License",
+  "Operating System :: OS Independent",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "coverage[toml]",
+  "black==24.8.0",
+  "ruff==0.6.8",
+  "isort==5.13.2",
+  "pre-commit==3.8.0",
+]
+
+[tool.black]
+line-length = 88
+target-version = ["py310"]
+exclude = ["data/", "models/", "dist/", "build/"]
+
+[tool.isort]
+profile = "black"
+line_length = 88
+src_paths = ["src", "tests"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+src = ["src", "tests"]
+exclude = ["data", "models", "build", "dist"]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q -ra"
+pythonpath = ["src"]
+
+[tool.coverage.run]
+branch = true
+source = ["src/landmark_embedding"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+fail_under = 80
+
