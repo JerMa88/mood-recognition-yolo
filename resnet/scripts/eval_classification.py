@@ -32,7 +32,7 @@ def main(args: list[str] | None = None):
     loader = DataLoader(ds, batch_size=parsed.batch_size, shuffle=False, num_workers=parsed.num_workers, pin_memory=True)
 
     model = make_resnet(parsed.arch, num_classes=len(ds.classes), pretrained=False, in_chans=1)
-    ckpt = torch.load(parsed.weights, map_location="cpu")
+    ckpt = torch.load(parsed.weights, map_location="cpu", weights_only=False)
     model.load_state_dict(ckpt["model"])
     model.to(device)
     model.eval()
